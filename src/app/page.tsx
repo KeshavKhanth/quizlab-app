@@ -14,7 +14,7 @@ import {
   type QuizResult,
 } from "@/lib/session-store";
 import type { Manifest, Course, TestInfo, Quiz } from "@/lib/types";
-import { DATA_BASE_URL } from "@/lib/config";
+import { NEXT_PUBLIC_IMAGE_URL } from "@/lib/config";
 
 type View =
   | { kind: "home" }
@@ -90,7 +90,7 @@ export default function Home() {
 
   // Load manifest, history, and sessions
   useEffect(() => {
-    fetch(`${DATA_BASE_URL}/manifest.json`)
+    fetch(`/api/manifest`)
       .then((r) => {
         if (!r.ok) throw new Error("Could not load manifest");
         return r.json();
@@ -118,10 +118,11 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${DATA_BASE_URL}/${test.path}`);
+      const res = await fetch(test.path); // test.path is now /api/quiz/{courseId}/{testId}
       if (!res.ok) throw new Error("Could not load quiz data");
       const quiz: Quiz = await res.json();
-      const basePath = `${DATA_BASE_URL}/${test.path.replace("/quiz.json", "")}`;
+      
+      const basePath = `${NEXT_PUBLIC_IMAGE_URL}/${course.id}/${test.id}/images`;
       setView({
         kind: "quiz",
         courseId: course.id,
